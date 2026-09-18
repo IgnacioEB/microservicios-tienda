@@ -1,22 +1,26 @@
 package usuario.service.demo.service;
 
 import org.springframework.stereotype.Service;
+import usuario.service.demo.dto.UsuarioPutRequest;
 import usuario.service.demo.exception.UsuarioNoEncontradoException;
 import usuario.service.demo.model.Usuario;
 import usuario.service.demo.repository.UsuarioRepository;
 
+import java.util.ArrayList;
+
 
 @Service
 public class UsuarioService {
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
     public UsuarioService(UsuarioRepository usuarioRepository){
         this.usuarioRepository=usuarioRepository;
     }
-    public UsuarioService(){}
 
 
-    public void registrarUsuario(String nombre, String email){
-        usuarioRepository.save(new Usuario(nombre,email));
+
+    public Usuario registrarUsuario(String nombre, String email){
+        Usuario usuario= new Usuario(nombre, email);
+        return usuarioRepository.save(usuario);
     }
 
     public Usuario obtenerUsuario(Long id){
@@ -27,11 +31,21 @@ public class UsuarioService {
         return user;
     }
 
+    public ArrayList<Usuario> obtenerUsuarios(){
+        return usuarioRepository.obtenerUsuarios();
+    }
 
 
+    public Usuario modificarUsuario(Long id,UsuarioPutRequest request){
+        if(usuarioRepository.findUsuarioByid(id)==null){
+            throw new UsuarioNoEncontradoException("Usuario no encontrado");
+        }
+        usuarioRepository.modificarUsuario(id,request.getNombre(),request.getEmail());
+        return usuarioRepository.findUsuarioByid(id);
+    }
 
 
-
-
-
+    public void eliminarUsuario(Long id){
+        usuarioRepository.deleteUsuarioById(id);
+    }
 }

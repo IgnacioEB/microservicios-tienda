@@ -12,23 +12,21 @@ import java.util.List;
 
 @RestController
 public class UsuarioController {
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
     public UsuarioController(UsuarioService usuarioService){
         this.usuarioService= usuarioService;
     }
-    public UsuarioController(){}
 
     @PostMapping("/usuario")
-    public ResponseEntity<String> crearUsuario(@RequestParam String nombre, @RequestParam String email){
-        usuarioService.registrarUsuario(nombre,email);
-        return ResponseEntity.status(HttpStatus.CREATED) .body("Se creo el usuario exitosamente");
+    public ResponseEntity<Usuario> crearUsuario(@RequestParam String nombre, @RequestParam String email){
+        return ResponseEntity.status(HttpStatus.CREATED) .body(usuarioService.registrarUsuario(nombre,email));
     }
 
     @GetMapping("/usuario/{id}")
     public ResponseEntity<Usuario> obtenerUsuario(@PathVariable Long id){
         return ResponseEntity.ok(usuarioService.obtenerUsuario(id));
     }
-/*
+
     @GetMapping("/usuarios")
     public ResponseEntity<ArrayList<Usuario>> obtenerTodosLosUsuarios(){
         return ResponseEntity.ok(usuarioService.obtenerUsuarios());
@@ -36,16 +34,14 @@ public class UsuarioController {
 
     @PutMapping("/usuario/{id}")
     public ResponseEntity<Usuario> modificarUsuario(@PathVariable Long id, @RequestBody UsuarioPutRequest request){
-        return ResponseEntity.ok(usuarioService.modificarUsuario(id,request));
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.modificarUsuario(id,request));
     }
 
     @DeleteMapping("/usuario/{id}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable Long id){
+        usuarioService.eliminarUsuario(id);
         return ResponseEntity.status(HttpStatus.OK).body("Se elimino el usuario exitosamente");
     }
-
-
-*/
 
 
 
