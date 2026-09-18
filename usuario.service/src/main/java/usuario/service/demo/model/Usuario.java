@@ -12,12 +12,10 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombreCompleto;
-    private String dni;
     private String email;
 
-    public Usuario(String nombre, String dni, String email){
+    public Usuario(String nombre, String email){
         this.nombreCompleto= nombre;
-        this.dni= dni;
         this.email=email;
     }
 
@@ -39,14 +37,6 @@ public class Usuario {
 
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
-    }
-
-    public String getDni() {
-        return dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
     }
 
     public String getEmail() {
