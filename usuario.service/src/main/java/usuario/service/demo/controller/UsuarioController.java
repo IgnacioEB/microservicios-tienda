@@ -40,7 +40,7 @@ public class UsuarioController {
     @DeleteMapping("/usuario/{id}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable Long id){
         usuarioService.eliminarUsuario(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Se elimino el usuario exitosamente");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Se elimino el usuario exitosamente");
     }
 
 
