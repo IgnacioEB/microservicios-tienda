@@ -13,7 +13,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Usuario findUsuarioByid(Long id);
 
-    @NativeQuery(value = "SELECT * FROM usuarios")
+    @NativeQuery(value = "SELECT * FROM usuarios ORDER BY id")
     ArrayList<Usuario> obtenerUsuarios();
 
     @Modifying

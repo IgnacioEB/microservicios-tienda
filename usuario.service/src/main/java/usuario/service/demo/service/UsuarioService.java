@@ -19,8 +19,7 @@ public class UsuarioService {
 
 
     public Usuario registrarUsuario(String nombre, String email){
-        Usuario usuario= new Usuario(nombre, email);
-        return usuarioRepository.save(usuario);
+        return usuarioRepository.save(new Usuario(nombre, email));
     }
 
     public Usuario obtenerUsuario(Long id){
@@ -46,6 +45,9 @@ public class UsuarioService {
 
 
     public void eliminarUsuario(Long id){
+        if(usuarioRepository.findUsuarioByid(id)==null){
+            throw new UsuarioNoEncontradoException("Usuaro no encontrado");
+        }
         usuarioRepository.deleteUsuarioById(id);
     }
 }
