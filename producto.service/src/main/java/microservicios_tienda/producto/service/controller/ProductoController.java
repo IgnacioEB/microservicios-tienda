@@ -1,6 +1,9 @@
 package microservicios_tienda.producto.service.controller;
 
 
+import microservicios_tienda.producto.service.dto.DescontarStockRequest;
+import microservicios_tienda.producto.service.model.Producto;
+import microservicios_tienda.producto.service.service.ProductoServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +35,8 @@ public class ProductoController {
     }
 
     @PatchMapping("/productos/{id}/stock")
-    public ResponseEntity<Producto> descontarStock(@PathVariable Long id){
-        return ResponseEntity.ok(productoServicio.descontarStock(id));
+    public ResponseEntity<Producto> descontarStock(@PathVariable Long id, @RequestBody DescontarStockRequest request){
+        return ResponseEntity.ok(productoServicio.descontarStock(id, request.getCantidad()));
     }
 
     @PatchMapping("/productos/{id}/desactivar")
