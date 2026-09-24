@@ -10,14 +10,17 @@ import jakarta.persistence.Id;
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String nombre;
     private Double precio;
     private Integer stock;
+    private Boolean estado;
 
     public Producto(String nombre, Double precio, Integer stock) {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
+        this.estado= true;
     }
 
     public Producto() {
@@ -46,5 +49,21 @@ public class Producto {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
