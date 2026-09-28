@@ -1,6 +1,8 @@
 package pedido.service.demo.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import pedido.service.demo.dto.DescontarStockRequest;
 import pedido.service.demo.dto.ProductoDTO;
@@ -17,8 +19,8 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final RestTemplate restTemplate;
 
-    private static final String ID_USUARIO= "http://usuario-service:8080/usuarios/{id}";
-    private static final String ID_PRODUCTO= "http://producto-service:8080/productos/{id}";
+    private static final String ID_USUARIO= "http://usuario-service:8080/usuario/{id}";
+    private static final String ID_PRODUCTO= "http://producto-service:8080/producto/{id}";
     private static final String STOCK_PRODUCTO="http://producto-service:8080/productos/{id}/stock";
 
 
@@ -30,15 +32,20 @@ public class PedidoService {
 
 
     public Pedido crearPedido(Long productoId, Long usuarioId,Integer cantidad) {
-        ProductoDTO producto= restTemplate.getForObject(ID_PRODUCTO, ProductoDTO.class, productoId);
-        UsuarioDTO usuario= restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,usuarioId);
-
-        if(producto==null){
+        ProductoDTO producto;
+        try{
+            producto= restTemplate.getForObject(ID_PRODUCTO, ProductoDTO.class, productoId);
+        } catch (HttpClientErrorException.NotFound e) {
             throw new ProductoNotFoundException("El producto no existe");
         }
-        if(usuario==null){
+        UsuarioDTO usuario;
+        try{
+        usuario= restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,usuarioId);
+        }
+        catch (HttpClientErrorException.NotFound e){
             throw new UsuarioNotFoundException("El usuario no existe");
         }
+
         if(cantidad==null||cantidad<=0){
             throw new IllegalArgumentException("La cantidad debe ser mayor que 0");
         }
@@ -50,8 +57,6 @@ public class PedidoService {
 
         restTemplate.patchForObject(STOCK_PRODUCTO, new DescontarStockRequest(cantidad), Void.class,productoId);
         return pedidoRepository.save(new Pedido(productoId,usuarioId,cantidad));
-
-
 
     }
 

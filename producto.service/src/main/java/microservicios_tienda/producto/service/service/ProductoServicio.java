@@ -45,7 +45,7 @@ public class ProductoServicio {
         if(producto==null){
             throw new ProductoNoEncontradoException("Producto no encontrado");
         }
-        if(cantidad<=0){
+        if(cantidad<=   0){
             throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
         }
         if(producto.getStock()<cantidad){

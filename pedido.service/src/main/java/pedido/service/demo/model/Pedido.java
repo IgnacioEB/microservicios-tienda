@@ -17,7 +17,7 @@ public class Pedido {
 
     public Pedido(Long productoId, Long usuarioId, Integer cantidad){
         this.productoId=productoId;
-        this.usuarioId=id;
+        this.usuarioId=usuarioId;
         this.cantidad=cantidad;
     }
 
