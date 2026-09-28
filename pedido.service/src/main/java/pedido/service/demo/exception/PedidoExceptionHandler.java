@@ -23,4 +23,8 @@ public class PedidoExceptionHandler {
     public ResponseEntity<ErrorResponse> manejarStockInsuficiente(StockInsuficienteException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));
     }
+    @ExceptionHandler(ProductoNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> manejarProductoNoDisponible(ProductoNotAvailableException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));
+    }
 }
