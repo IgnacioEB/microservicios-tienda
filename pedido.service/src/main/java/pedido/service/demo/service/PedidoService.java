@@ -2,11 +2,11 @@ package pedido.service.demo.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import pedido.service.demo.dto.DescontarStockRequest;
 import pedido.service.demo.dto.ProductoDTO;
 import pedido.service.demo.dto.UsuarioDTO;
+import pedido.service.demo.exception.ProductoNotAvailableException;
 import pedido.service.demo.exception.ProductoNotFoundException;
 import pedido.service.demo.exception.StockInsuficienteException;
 import pedido.service.demo.exception.UsuarioNotFoundException;
@@ -38,9 +38,11 @@ public class PedidoService {
         } catch (HttpClientErrorException.NotFound e) {
             throw new ProductoNotFoundException("El producto no existe");
         }
-        UsuarioDTO usuario;
+        if(Boolean.FALSE.equals(producto.estado())){
+            throw new ProductoNotAvailableException("El producto no esta disponible");
+        }
         try{
-        usuario= restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,usuarioId);
+             restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,usuarioId);
         }
         catch (HttpClientErrorException.NotFound e){
             throw new UsuarioNotFoundException("El usuario no existe");
