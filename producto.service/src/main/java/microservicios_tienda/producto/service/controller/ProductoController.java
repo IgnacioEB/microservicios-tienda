@@ -1,6 +1,7 @@
 package microservicios_tienda.producto.service.controller;
 
 
+import microservicios_tienda.producto.service.dto.CrearProductoRequest;
 import microservicios_tienda.producto.service.dto.DescontarStockRequest;
 import microservicios_tienda.producto.service.model.Producto;
 import microservicios_tienda.producto.service.service.ProductoServicio;
@@ -20,8 +21,8 @@ public class ProductoController {
     }
 
     @PostMapping("/producto")
-    public ResponseEntity<Producto> crearProducto(@RequestParam String nombre, @RequestParam Double precio, @RequestParam Integer stock){
-        return ResponseEntity.status(HttpStatus.CREATED) .body(productoServicio.crearProducto(nombre,precio,stock));
+    public ResponseEntity<Producto> crearProducto(@RequestBody CrearProductoRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED) .body(productoServicio.crearProducto(request));
     }
 
     @GetMapping("/producto/{id}")
