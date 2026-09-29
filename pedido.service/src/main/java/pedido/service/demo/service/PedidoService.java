@@ -3,7 +3,6 @@ package pedido.service.demo.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import pedido.service.demo.dto.CrearPedidoRequest;
 import pedido.service.demo.dto.DescontarStockRequest;
 import pedido.service.demo.dto.ProductoDTO;
 import pedido.service.demo.dto.UsuarioDTO;
@@ -32,10 +31,10 @@ public class PedidoService {
 
 
 
-    public Pedido crearPedido(CrearPedidoRequest request) {
+    public Pedido crearPedido(Long productoId, Long usuarioId,Integer cantidad) {
         ProductoDTO producto;
         try{
-            producto= restTemplate.getForObject(ID_PRODUCTO, ProductoDTO.class, request.productoId());
+            producto= restTemplate.getForObject(ID_PRODUCTO, ProductoDTO.class, productoId);
         } catch (HttpClientErrorException.NotFound e) {
             throw new ProductoNotFoundException("El producto no existe");
         }
@@ -43,23 +42,23 @@ public class PedidoService {
             throw new ProductoNotAvailableException("El producto no esta disponible");
         }
         try{
-             restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,request.usuarioId());
+             restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,usuarioId);
         }
         catch (HttpClientErrorException.NotFound e){
             throw new UsuarioNotFoundException("El usuario no existe");
         }
 
-        if(request.cantidad()==null||request.cantidad()<=0){
+        if(cantidad==null||cantidad<=0){
             throw new IllegalArgumentException("La cantidad debe ser mayor que 0");
         }
-        if(producto.stock()<request.cantidad()){
+        if(producto.stock()<cantidad){
             throw new StockInsuficienteException("Stock insuficiente");
         }
 
 
 
-        restTemplate.patchForObject(STOCK_PRODUCTO, new DescontarStockRequest(request.cantidad()), Void.class,request.productoId());
-        return pedidoRepository.save(new Pedido(request.productoId(), request.usuarioId(), request.cantidad()));
+        restTemplate.patchForObject(STOCK_PRODUCTO, new DescontarStockRequest(cantidad), Void.class,productoId);
+        return pedidoRepository.save(new Pedido(productoId,usuarioId,cantidad));
 
     }
 
