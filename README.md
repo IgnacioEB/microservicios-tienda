@@ -88,7 +88,7 @@ GET    /pedidos               → listar todos(y con parámetro opcional para li
 POST "http://localhost:8081/usuarios?nombre=Juan&email=juan@mail.com"
 
 # 2. Crear un producto
-"http://localhost:8082/producto"
+POST "http://localhost:8082/producto"
 {
 "nombre":"JugoBaggio",
 "precio":2100,
