@@ -21,7 +21,7 @@ public class ProductoServicio {
 
 
     public Producto crearProducto(CrearProductoRequest request) {
-        return productoRepository.save(new Producto(request.nombre(), request.precio(), request.stock()));
+        return productoRepository.save(new Producto(request.nombre(),request.precio(),request.stock()));
     }
 
     public Producto obtenerProducto(Long id) {

@@ -4,7 +4,6 @@ package pedido.service.demo.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pedido.service.demo.dto.CrearPedidoRequest;
 import pedido.service.demo.model.Pedido;
 import pedido.service.demo.service.PedidoService;
 
@@ -19,8 +18,8 @@ public class PedidoController {
     }
 
     @PostMapping("/pedido")
-    public ResponseEntity<Pedido> crearPedido(@RequestBody CrearPedidoRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.crearPedido(request));
+    public ResponseEntity<Pedido> crearPedido(@RequestParam Long productoId, @RequestParam Long usuarioId,@RequestParam Integer cantidad){
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.crearPedido(productoId,usuarioId,cantidad));
     }
 
     @GetMapping("/pedido/{id}")
