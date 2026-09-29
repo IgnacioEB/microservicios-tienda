@@ -1,5 +1,6 @@
 package microservicios_tienda.producto.service.service;
 
+import microservicios_tienda.producto.service.dto.CrearProductoRequest;
 import microservicios_tienda.producto.service.dto.DescontarStockRequest;
 import microservicios_tienda.producto.service.exception.ProductoNoEncontradoException;
 import microservicios_tienda.producto.service.exception.StockInsuficienteException;
@@ -19,8 +20,8 @@ public class ProductoServicio {
     }
 
 
-    public Producto crearProducto(String nombre, Double precio, Integer stock) {
-        return productoRepository.save(new Producto(nombre,precio,stock));
+    public Producto crearProducto(CrearProductoRequest request) {
+        return productoRepository.save(new Producto(request.nombre(),request.precio(),request.stock()));
     }
 
     public Producto obtenerProducto(Long id) {
