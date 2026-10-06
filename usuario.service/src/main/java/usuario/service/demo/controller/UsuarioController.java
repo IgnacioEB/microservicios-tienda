@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class UsuarioController {
+public class    UsuarioController {
     private final UsuarioService usuarioService;
     public UsuarioController(UsuarioService usuarioService){
         this.usuarioService= usuarioService;

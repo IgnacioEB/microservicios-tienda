@@ -52,6 +52,17 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - "8083:8080"
+  gateway-service:
+    build: ./gateway-service
+    depends_on:
+      usuario-service:
+        condition: service_started
+      producto-service:
+        condition: service_started
+      pedido-service:
+        condition: service_started
+    ports:
+      - "8080:8080"
 
 volumes:
   postgres_data:
