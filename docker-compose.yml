@@ -22,8 +22,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/usuarios
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8081:8080"
+
 
   producto-service:
     build: ./producto.service
@@ -34,8 +33,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/productos
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8082:8080"
+
 
   pedido-service:
     build: ./pedido.service
@@ -50,8 +48,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/pedidos
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8083:8080"
+    
   gateway-service:
     build: ./gateway-service
     depends_on:
