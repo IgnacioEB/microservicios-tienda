@@ -6,24 +6,26 @@ spring:
     name: gateway-service
   cloud:
     gateway:
-      routes:
-        - id: usuario-service
-          uri: http://usuario-service:8080
-          predicates:
-            - Path=/api/usuarios/**
-          filters:
-            - RewritePath=/api/usuarios/(?<segment>.*), /usuarios/${segment}
+      server:
+        webflux:
+          routes:
+            - id: usuario-service
+              uri: http://usuario-service:8080
+              predicates:
+                - Path=/api/usuario/**,/api/usuarios/**
+              filters:
+                - StripPrefix=1
 
-        - id: producto-service
-          uri: http://producto-service:8080
-          predicates:
-            - Path=/api/productos/**
-          filters:
-            - RewritePath=/api/productos/(?<segment>.*), /productos/${segment}
+            - id: producto-service
+              uri: http://producto-service:8080
+              predicates:
+                - Path=/api/producto/**,/api/productos/**
+              filters:
+                - StripPrefix=1
 
-        - id: pedido-service
-          uri: http://pedido-service:8080
-          predicates:
-            - Path=/api/pedidos/**
-          filters:
-            - RewritePath=/api/pedidos/(?<segment>.*), /pedido/${segment}
+            - id: pedido-service
+              uri: http://pedido-service:8080
+              predicates:
+                - Path=/api/pedido/**,/api/pedidos/**
+              filters:
+                - StripPrefix=1
