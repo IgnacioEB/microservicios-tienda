@@ -1,22 +1,26 @@
 package usuario.service.demo.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity(name = "usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nombreCompleto;
-    private String email;
 
-    public Usuario(String nombre, String email){
-        this.nombreCompleto= nombre;
+    @Column(nullable = false)
+    private String password;
+    @Column(nullable = false,unique = true)
+    private String email;
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
+
+    public Usuario(String email, String password, Rol rol)
+    {
         this.email=email;
+        this.password=password;
+        this.rol=rol;
     }
 
     public Usuario() {
@@ -32,13 +36,6 @@ public class Usuario {
         this.id = id;
     }
 
-    public String getNombreCompleto() {
-        return nombreCompleto;
-    }
-
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
-    }
 
     public String getEmail() {
         return email;
@@ -46,5 +43,25 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
+    public enum Rol{
+        USER
     }
 }

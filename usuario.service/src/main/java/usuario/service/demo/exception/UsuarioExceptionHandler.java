@@ -15,6 +15,15 @@ public class UsuarioExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage(),"Not Found" ,HttpStatus.NOT_FOUND.value()));
     }
 
+    @ExceptionHandler(EmailNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> manejarEmailNoDisponible(EmailNotAvailableException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));
+
+    }
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ErrorResponse> manejarCredencialesInvalidas(CredencialesInvalidasException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));
+    }
 
 
 

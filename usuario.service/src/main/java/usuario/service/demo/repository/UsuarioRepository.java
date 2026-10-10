@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import usuario.service.demo.model.Usuario;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
@@ -24,4 +25,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Modifying
     @Transactional
     void deleteUsuarioById(Long id);
+
+    boolean existsUsuarioByEmail(String email);
+
+    @Override
+    Optional<Usuario> findById(Long aLong);
+
+    Optional<Usuario> findUsuarioByEmail(String email);
 }
