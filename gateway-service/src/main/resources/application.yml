@@ -22,6 +22,12 @@ spring:
                 - Path=/api/producto/**,/api/productos/**
               filters:
                 - StripPrefix=1
+            - id: auth-service
+              uri: http://usuario-service:8080
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - StripPrefix=1
 
             - id: pedido-service
               uri: http://pedido-service:8080
@@ -29,3 +35,6 @@ spring:
                 - Path=/api/pedido/**,/api/pedidos/**
               filters:
                 - StripPrefix=1
+
+jwt:
+  secret: ${JWT_SECRET}

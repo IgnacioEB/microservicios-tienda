@@ -29,7 +29,7 @@ public class AuthService {
             throw new EmailNotAvailableException("El email ya esta en uso");
         }
         String hashPassword = passwordEncoder.encode(request.getPassword());
-        Usuario usuario= new Usuario(request.getEmail(), request.getPassword(), Usuario.Rol.USER);
+        Usuario usuario= new Usuario(request.getEmail(), hashPassword, Usuario.Rol.USER);
         usuarioRepository.save(usuario);
     }
 

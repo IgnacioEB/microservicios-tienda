@@ -10,10 +10,12 @@ public class RegistroRequest {
     @NotBlank
     private String password;
 
-    public RegistroRequest(String nombre, String password){
-        this.email=nombre;
-        this.password=password;
+    public RegistroRequest() {
+    }
 
+    public RegistroRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public String getEmail() {
