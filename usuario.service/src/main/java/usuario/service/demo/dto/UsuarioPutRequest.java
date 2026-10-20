@@ -1,19 +1,18 @@
 package usuario.service.demo.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class UsuarioPutRequest {
-    String nombre, email;
+    @NotBlank
+    @Email
+    private String email;
 
-    public UsuarioPutRequest(String nombre, String email) {
-        this.nombre = nombre;
+    public UsuarioPutRequest() {
+    }
+
+    public UsuarioPutRequest(String email) {
         this.email = email;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public String getEmail() {

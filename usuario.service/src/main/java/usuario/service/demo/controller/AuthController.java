@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import usuario.service.demo.dto.LoginRequest;
 import usuario.service.demo.dto.RegistroRequest;
+import usuario.service.demo.service.AuthService;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,13 +21,13 @@ public class AuthController {
 
     @PostMapping("/registro")
     public ResponseEntity<Void> registrar(@Valid @RequestBody RegistroRequest request){
-        authService.registrarUsuario(request);
-        ResponseEntity.status(HttpStatus.CREATED).build();
+        authService.registrar(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request){
-        ResponseEntity.ok(authService.login(request));
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request){
+        return ResponseEntity.ok(authService.login(request));
     }
 
 
