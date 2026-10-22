@@ -29,20 +29,35 @@ Proyecto de práctica para explorar una arquitectura de microservicios: tres ser
 - Cada servicio es un proyecto Spring Boot independiente, con su propia base de datos.
 - `pedido-service` es el que orquesta: antes de confirmar un pedido valida por HTTP que el usuario exista, que el producto exista y esté activo, y que haya stock suficiente. Después descuenta el stock en `producto-service`.
 
-## Autenticación
+## Autenticación y autorización
 
-1. `POST /api/auth/registro` crea el usuario (la contraseña se guarda hasheada con BCrypt).
-2. `POST /api/auth/login` devuelve un JWT.
+**Autenticación (quién sos)**
+
+1. `POST /api/auth/registro` crea un usuario con rol `USER` (la contraseña se guarda hasheada con BCrypt).
+2. `POST /api/auth/login` devuelve un JWT con el email, el rol y el id del usuario.
 3. El resto de los endpoints requieren el header `Authorization: Bearer <token>`. El Gateway valida la firma y el vencimiento; si el token falta o es inválido, responde `401`.
-4. Si el token es válido, el Gateway reenvía el pedido con los headers `X-User-Email` y `X-User-Rol`, y descarta cualquier header con esos nombres que mande el cliente.
+4. Si el token es válido, el Gateway reenvía el pedido con los headers `X-User-Id`, `X-User-Email` y `X-User-Rol`, y descarta cualquier header con esos nombres que mande el cliente.
 
-`usuario-service` firma los tokens y `gateway-service` los verifica, ambos con el mismo `JWT_SECRET` (variable de entorno). Los servicios internos confían en el Gateway, por eso no publican puertos hacia afuera.
+**Autorización (qué podés hacer)**
+
+| Recurso | `USER` | `ADMIN` |
+|---|---|---|
+| Usuarios (`/api/usuario/**`, `/api/usuarios`) | `403` | acceso total |
+| Productos: consultar (`GET`) | sí | sí |
+| Productos: crear, descontar stock, desactivar | `403` | sí |
+| Pedidos | crea pedidos a su nombre y ve solo los suyos | ve todos |
+
+- El Gateway aplica las reglas por rol y responde `403` si no corresponde.
+- `pedido-service` usa `X-User-Id` para saber de quién es cada pedido: el usuario sale del token, no se manda en el body.
+- El primer `ADMIN` se crea al arrancar `usuario-service` con `ADMIN_EMAIL` y `ADMIN_PASSWORD` (variables de entorno). El registro público siempre crea `USER`.
+
+`usuario-service` firma los tokens y `gateway-service` los verifica, ambos con el mismo `JWT_SECRET`. Los servicios internos confían en el Gateway, por eso no publican puertos hacia afuera.
 
 ## Servicios
 
 | Servicio | Acceso | Responsabilidad |
 |---|---|---|
-| `gateway-service` | `localhost:8080` | Punto de entrada: enruta `/api/**` y valida el JWT |
+| `gateway-service` | `localhost:8080` | Punto de entrada: enruta `/api/**`, valida el JWT y aplica los permisos por rol |
 | `usuario-service` | solo interno | Registro, login (emite el JWT) y CRUD de usuarios |
 | `producto-service` | solo interno | CRUD de productos y control de stock |
 | `pedido-service` | solo interno | Crea pedidos y orquesta la validación con los otros dos |
@@ -68,6 +83,8 @@ Requiere Docker y Docker Compose.
    DB_USER=postgres
    DB_PASSWORD=tu_contraseña
    JWT_SECRET=una_clave_en_base64_de_al_menos_32_bytes
+   ADMIN_EMAIL=admin@mail.com
+   ADMIN_PASSWORD=la_contraseña_del_admin
    ```
    Para generar el `JWT_SECRET`:
    ```bash
@@ -93,7 +110,7 @@ POST   /api/auth/login                 → devuelve el JWT (body: email, passwor
 
 ### Con token (`Authorization: Bearer <token>`)
 
-**usuarios**
+**usuarios** (solo `ADMIN`)
 ```
 GET    /api/usuario/{id}               → obtener por id
 GET    /api/usuarios                   → listar todos
@@ -101,7 +118,7 @@ PUT    /api/usuario/{id}               → modificar el email
 DELETE /api/usuario/{id}               → eliminar usuario
 ```
 
-**productos**
+**productos** (consultar: cualquier usuario; crear, stock y desactivar: solo `ADMIN`)
 ```
 POST   /api/producto                   → crear producto
 GET    /api/producto/{id}              → obtener por id
@@ -112,32 +129,25 @@ PATCH  /api/productos/{id}/desactivar  → soft-delete (desactiva el producto)
 
 **pedidos**
 ```
-POST   /api/pedido                     → crear un pedido
-GET    /api/pedido/{id}                → obtener por id
-GET    /api/pedidos                    → listar todos (con ?usuario={id} para filtrar por usuario)
+POST   /api/pedido                     → crear un pedido a nombre del usuario del token (body: productoId, cantidad)
+GET    /api/pedido/{id}                → obtener por id (un USER solo ve los suyos)
+GET    /api/pedidos                    → USER: solo los suyos; ADMIN: todos (con ?usuario={id} para filtrar)
 ```
 
 ## Probarlo de punta a punta
 
 ```
-# 1. Registrar un usuario
-POST "http://localhost:8080/api/auth/registro"
-{
-  "email": "juan@mail.com",
-  "password": "1234"
-}
-
-# 2. Iniciar sesión (devuelve el token)
+# 1. Iniciar sesión como admin (ADMIN_EMAIL / ADMIN_PASSWORD del .env)
 POST "http://localhost:8080/api/auth/login"
 {
-  "email": "juan@mail.com",
-  "password": "1234"
+  "email": "admin@mail.com",
+  "password": "la_contraseña_del_admin"
 }
 
-# En los pasos siguientes, agregar el header:
-# Authorization: Bearer <token del paso 2>
+# En los pasos con token, agregar el header:
+# Authorization: Bearer <token devuelto por el login>
 
-# 3. Crear un producto
+# 2. Crear un producto (token de admin)
 POST "http://localhost:8080/api/producto"
 {
   "nombre": "JugoBaggio",
@@ -145,18 +155,34 @@ POST "http://localhost:8080/api/producto"
   "stock": 7
 }
 
-# 4. Crear un pedido (usando los ids devueltos arriba)
+# 3. Registrar un usuario común
+POST "http://localhost:8080/api/auth/registro"
+{
+  "email": "juan@mail.com",
+  "password": "1234"
+}
+
+# 4. Iniciar sesión como ese usuario (devuelve su token)
+POST "http://localhost:8080/api/auth/login"
+{
+  "email": "juan@mail.com",
+  "password": "1234"
+}
+
+# 5. Crear un pedido (token del usuario; el usuario sale del token)
 POST "http://localhost:8080/api/pedido"
 {
   "productoId": 1,
-  "usuarioId": 1,
   "cantidad": 2
 }
 
-# 5. Ver el historial de ese usuario
-GET "http://localhost:8080/api/pedidos?usuario=1"
+# 6. Ver sus pedidos (token del usuario: solo ve los suyos)
+GET "http://localhost:8080/api/pedidos"
 
-# Sin el header Authorization, cualquiera de los pasos 3 a 5 responde 401
+# Con el token del usuario común:
+#   POST /api/producto   -> 403
+#   GET  /api/usuarios   -> 403
+# Sin el header Authorization, cualquier endpoint (salvo registro y login) responde 401
 ```
 
 ## Stack
@@ -176,6 +202,5 @@ GET "http://localhost:8080/api/pedidos?usuario=1"
 - [x] Dockerizado completo con docker-compose
 - [x] API Gateway como único punto de entrada
 - [x] Autenticación con JWT (registro, login y validación en el Gateway)
+- [x] Autorización por rol (`USER` / `ADMIN`) y pedidos asociados al usuario del token
 - [ ] Tests unitarios
-- [ ] `pedido-service` toma el usuario del token (hoy confía en el `usuarioId` del body)
-- [ ] Autorización por rol
