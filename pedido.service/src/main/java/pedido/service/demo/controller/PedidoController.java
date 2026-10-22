@@ -10,6 +10,7 @@ import pedido.service.demo.service.PedidoService;
 
 import java.util.ArrayList;
 
+// X-User-Id y X-User-Rol los agrega el Gateway a partir del token ya validado
 @RestController
 public class PedidoController {
     private final PedidoService pedidoService;
@@ -19,22 +20,23 @@ public class PedidoController {
     }
 
     @PostMapping("/pedido")
-    public ResponseEntity<Pedido> crearPedido(@RequestBody CrearPedidoRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.crearPedido(request));
+    public ResponseEntity<Pedido> crearPedido(@RequestHeader("X-User-Id") Long usuarioId,
+                                              @RequestBody CrearPedidoRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.crearPedido(usuarioId, request));
     }
 
     @GetMapping("/pedido/{id}")
-    public ResponseEntity<Pedido> buscarPedido(@PathVariable Long id){
-        return ResponseEntity.ok(pedidoService.buscarPedido(id));
+    public ResponseEntity<Pedido> buscarPedido(@PathVariable Long id,
+                                               @RequestHeader("X-User-Id") Long usuarioId,
+                                               @RequestHeader("X-User-Rol") String rol){
+        return ResponseEntity.ok(pedidoService.buscarPedido(id, usuarioId, "ADMIN".equals(rol)));
     }
 
     @GetMapping("/pedidos")
-    public ResponseEntity<ArrayList<Pedido>> buscarPedidos(@RequestParam(required = false)Long usuario){
-        return ResponseEntity.ok(pedidoService.buscarPedidos(usuario));
+    public ResponseEntity<ArrayList<Pedido>> buscarPedidos(@RequestParam(required = false) Long usuario,
+                                                           @RequestHeader("X-User-Id") Long usuarioId,
+                                                           @RequestHeader("X-User-Rol") String rol){
+        return ResponseEntity.ok(pedidoService.buscarPedidos(usuario, usuarioId, "ADMIN".equals(rol)));
     }
-
-
-
-
 
 }

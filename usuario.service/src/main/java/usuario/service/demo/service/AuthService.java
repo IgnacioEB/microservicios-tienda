@@ -40,7 +40,7 @@ public class AuthService {
         if(!passwordEncoder.matches(request.getPassword(), usuario.getPassword())){
             throw new CredencialesInvalidasException(("Email o contraseña incorrecta"));
         }
-        return jwtService.generarToken(usuario.getEmail(), usuario.getRol().name());
+        return jwtService.generarToken(usuario.getId(), usuario.getEmail(), usuario.getRol().name());
     }
 
 }

@@ -26,12 +26,13 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generarToken(String email, String rol) {
+    public String generarToken(Long id, String email, String rol) {
         long ahora = System.currentTimeMillis();
 
         return Jwts.builder()
                 .subject(email)
                 .claim("rol", rol)
+                .claim("uid", String.valueOf(id))
                 .issuedAt(new Date(ahora))
                 .expiration(new Date(ahora + expiration))
                 .signWith(getKey())

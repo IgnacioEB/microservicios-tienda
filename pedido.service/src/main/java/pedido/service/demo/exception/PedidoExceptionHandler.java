@@ -23,6 +23,16 @@ public class PedidoExceptionHandler {
     public ResponseEntity<ErrorResponse> manejarStockInsuficiente(StockInsuficienteException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));
     }
+    @ExceptionHandler(PedidoNotFoundException.class)
+    public ResponseEntity<ErrorResponse> manejarPedidoNoExistente(PedidoNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage(),"Not Found",HttpStatus.NOT_FOUND.value()));
+    }
+
+    @ExceptionHandler(AccesoDenegadoException.class)
+    public ResponseEntity<ErrorResponse> manejarAccesoDenegado(AccesoDenegadoException e){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(e.getMessage(),"Forbidden",HttpStatus.FORBIDDEN.value()));
+    }
+
     @ExceptionHandler(ProductoNotAvailableException.class)
     public ResponseEntity<ErrorResponse> manejarProductoNoDisponible(ProductoNotAvailableException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));

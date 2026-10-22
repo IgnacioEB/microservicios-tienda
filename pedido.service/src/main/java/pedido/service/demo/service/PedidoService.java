@@ -7,6 +7,8 @@ import pedido.service.demo.dto.CrearPedidoRequest;
 import pedido.service.demo.dto.DescontarStockRequest;
 import pedido.service.demo.dto.ProductoDTO;
 import pedido.service.demo.dto.UsuarioDTO;
+import pedido.service.demo.exception.AccesoDenegadoException;
+import pedido.service.demo.exception.PedidoNotFoundException;
 import pedido.service.demo.exception.ProductoNotAvailableException;
 import pedido.service.demo.exception.ProductoNotFoundException;
 import pedido.service.demo.exception.StockInsuficienteException;
@@ -32,7 +34,7 @@ public class PedidoService {
 
 
 
-    public Pedido crearPedido(CrearPedidoRequest request) {
+    public Pedido crearPedido(Long usuarioId, CrearPedidoRequest request) {
         ProductoDTO producto;
         try{
             producto= restTemplate.getForObject(ID_PRODUCTO, ProductoDTO.class, request.productoId());
@@ -43,7 +45,7 @@ public class PedidoService {
             throw new ProductoNotAvailableException("El producto no esta disponible");
         }
         try{
-             restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class,request.usuarioId());
+             restTemplate.getForObject(ID_USUARIO, UsuarioDTO.class, usuarioId);
         }
         catch (HttpClientErrorException.NotFound e){
             throw new UsuarioNotFoundException("El usuario no existe");
@@ -59,21 +61,34 @@ public class PedidoService {
 
 
         restTemplate.patchForObject(STOCK_PRODUCTO, new DescontarStockRequest(request.cantidad()), Void.class,request.productoId());
-        return pedidoRepository.save(new Pedido(request.productoId(), request.usuarioId(), request.cantidad()));
+        return pedidoRepository.save(new Pedido(request.productoId(), usuarioId, request.cantidad()));
 
     }
 
-    public Pedido buscarPedido(Long id) {
-        return pedidoRepository.findPedidoById(id);
+    // Un USER solo ve sus pedidos; si el pedido es de otro, responde como si no existiera
+    public Pedido buscarPedido(Long id, Long usuarioId, boolean esAdmin) {
+        Pedido pedido = pedidoRepository.findPedidoById(id);
+        if (pedido == null || (!esAdmin && !pedido.getUsuarioId().equals(usuarioId))) {
+            throw new PedidoNotFoundException("El pedido no existe");
+        }
+        return pedido;
     }
 
     public ArrayList<Pedido> buscarPedidoPorUsuario(Long id) {
         return pedidoRepository.findPedidoByUsuarioId(id);
     }
-    public ArrayList<Pedido> buscarPedidos(Long usuarioId) {
-        return (usuarioId!=null)
-                ?this.buscarPedidoPorUsuario(usuarioId)
-                :pedidoRepository.findAll();
+
+    // ADMIN: todos (o los de un usuario si manda el filtro). USER: solo los suyos.
+    public ArrayList<Pedido> buscarPedidos(Long usuarioFiltro, Long usuarioId, boolean esAdmin) {
+        if (esAdmin) {
+            return (usuarioFiltro != null)
+                    ? this.buscarPedidoPorUsuario(usuarioFiltro)
+                    : pedidoRepository.findAll();
+        }
+        if (usuarioFiltro != null && !usuarioFiltro.equals(usuarioId)) {
+            throw new AccesoDenegadoException("No podes ver los pedidos de otro usuario");
+        }
+        return this.buscarPedidoPorUsuario(usuarioId);
     }
 
 }
