@@ -18,8 +18,8 @@ public class UsuarioService {
 
 
 
-    public Usuario registrarUsuario(String nombre, String email){
-        return usuarioRepository.save(new Usuario(nombre, email));
+    public Usuario registrarUsuario(String email, String password){
+        return usuarioRepository.save(new Usuario(email, password, Usuario.Rol.USER));
     }
 
     public Usuario obtenerUsuario(Long id){
@@ -39,7 +39,7 @@ public class UsuarioService {
         if(usuarioRepository.findUsuarioByid(id)==null){
             throw new UsuarioNoEncontradoException("Usuario no encontrado");
         }
-        usuarioRepository.modificarUsuario(id,request.getNombre(),request.getEmail());
+        usuarioRepository.modificarUsuario(id, request.getEmail());
         return usuarioRepository.findUsuarioByid(id);
     }
 

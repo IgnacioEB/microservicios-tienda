@@ -22,7 +22,9 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/usuarios
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
 
   producto-service:
     build: ./producto.service
@@ -33,7 +35,6 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/productos
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-
 
   pedido-service:
     build: ./pedido.service
@@ -48,7 +49,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/pedidos
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    
+
   gateway-service:
     build: ./gateway-service
     depends_on:
@@ -58,6 +59,8 @@ services:
         condition: service_started
       pedido-service:
         condition: service_started
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8080:8080"
 

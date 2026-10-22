@@ -1,4 +1,4 @@
 package pedido.service.demo.dto;
 
-public record CrearPedidoRequest(Long productoId, Long usuarioId, Integer cantidad){
+public record CrearPedidoRequest(Long productoId, Integer cantidad){
 }

@@ -1,6 +1,7 @@
 package usuario.service.demo.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity(name = "usuarios")
@@ -9,6 +10,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
     @Column(nullable = false,unique = true)
@@ -62,6 +64,6 @@ public class Usuario {
     }
 
     public enum Rol{
-        USER
+        USER, ADMIN
     }
 }

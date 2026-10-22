@@ -22,7 +22,7 @@ public class UsuarioExceptionHandler {
     }
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ErrorResponse> manejarCredencialesInvalidas(CredencialesInvalidasException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage(),"Bad Request",HttpStatus.BAD_REQUEST.value()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(e.getMessage(),"Unauthorized",HttpStatus.UNAUTHORIZED.value()));
     }
 
 

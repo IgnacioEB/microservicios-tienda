@@ -1,7 +1,10 @@
+
 package usuario.service.demo.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,45 +19,50 @@ public class JwtService {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private Long expiration;
+    private long expiration;
 
-    private SecretKey getKey(){
-        return Keys.hmacShaKeyFor(secret.getBytes());
+    private SecretKey getKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generarToken(String email, String rol){
-        Date now= new Date();
-        Date expires= new Date(now.getTime()+expiration);
+    public String generarToken(Long id, String email, String rol) {
+        long ahora = System.currentTimeMillis();
 
         return Jwts.builder()
                 .subject(email)
-                .claim("rol",rol)
-                .issuedAt(now)
-                .expiration(expires)
+                .claim("rol", rol)
+                .claim("uid", String.valueOf(id))
+                .issuedAt(new Date(ahora))
+                .expiration(new Date(ahora + expiration))
                 .signWith(getKey())
                 .compact();
+    }
 
+    public String extraerEmail(String token) {
+        return extraerClaims(token).getSubject();
     }
-    public String extraerEmail(String token){
-        return parsearClaims(token).getSubject();
+
+    public String extraerRol(String token) {
+        return extraerClaims(token).get("rol", String.class);
     }
-    public Boolean esTokenValido(String token){
-        try{
-            parsearClaims(token);
-            return true;
-        } catch (Exception e) {
+
+    public boolean esTokenValido(String token) {
+        try {
+            Claims claims = extraerClaims(token);
+            return claims.getSubject() != null
+                    && claims.getExpiration() != null
+                    && claims.getExpiration().after(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
-    private Claims parsearClaims(String token){
+
+    private Claims extraerClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
-
-
 }
-
