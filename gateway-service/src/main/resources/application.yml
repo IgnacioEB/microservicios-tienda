@@ -9,6 +9,29 @@ spring:
       server:
         webflux:
           routes:
+            #rutas de documentacion
+            - id: docs-usuario
+              uri: http://usuario-service:8080
+              predicates:
+                - Path=/docs/usuario/**
+              filters:
+                - RewritePath=/docs/usuario/(?<resto>.*), /${resto}
+
+            - id: docs-producto
+              uri: http://producto-service:8080
+              predicates:
+                - Path=/docs/producto/**
+              filters:
+                - RewritePath=/docs/producto/(?<resto>.*), /${resto}
+
+            - id: docs-pedido
+              uri: http://pedido-service:8080
+              predicates:
+                - Path=/docs/pedido/**
+              filters:
+                - RewritePath=/docs/pedido/(?<resto>.*), /${resto}
+
+            #rutas de apis
             - id: usuario-service
               uri: http://usuario-service:8080
               predicates:
@@ -22,6 +45,7 @@ spring:
                 - Path=/api/producto/**,/api/productos/**
               filters:
                 - StripPrefix=1
+
             - id: auth-service
               uri: http://usuario-service:8080
               predicates:
@@ -35,6 +59,16 @@ spring:
                 - Path=/api/pedido/**,/api/pedidos/**
               filters:
                 - StripPrefix=1
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Usuario Service
+        url: /docs/usuario/v3/api-docs
+      - name: Producto Service
+        url: /docs/producto/v3/api-docs
+      - name: Pedido Service
+        url: /docs/pedido/v3/api-docs
 
 jwt:
   secret: ${JWT_SECRET}
