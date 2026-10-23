@@ -44,6 +44,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                     .build();
             return chain.filter(exchange.mutate().request(limpia).build());
         }
+        if (HttpMethod.GET.equals(method) && path.startsWith("/docs/")) {
+            return chain.filter(exchange);
+        }
 
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 

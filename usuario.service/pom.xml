@@ -30,6 +30,11 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>3.0.3</version>
+		</dependency>
 		<!-- Solo BCrypt: NO se usa spring-boot-starter-security (el Gateway valida los tokens) -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
