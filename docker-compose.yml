@@ -1,4 +1,19 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq-broker
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
   postgres:
     image: postgres:16-alpine
     environment:
@@ -35,6 +50,11 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/productos
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+
 
   pedido-service:
     build: ./pedido.service
@@ -49,6 +69,10 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/pedidos
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
 
   gateway-service:
     build: ./gateway-service
@@ -63,6 +87,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8080:8080"
+
 
 volumes:
   postgres_data:

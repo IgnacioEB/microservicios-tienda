@@ -1,7 +1,6 @@
 package microservicios_tienda.producto.service.service;
 
 import microservicios_tienda.producto.service.dto.CrearProductoRequest;
-import microservicios_tienda.producto.service.dto.DescontarStockRequest;
 import microservicios_tienda.producto.service.exception.ProductoNoEncontradoException;
 import microservicios_tienda.producto.service.exception.StockInsuficienteException;
 import microservicios_tienda.producto.service.model.Producto;
@@ -12,10 +11,10 @@ import java.util.ArrayList;
 
 
 @Service
-public class ProductoServicio {
+public class ProductoService {
 
     private final ProductoRepository productoRepository;
-    public ProductoServicio(ProductoRepository productoRepository){
+    public ProductoService(ProductoRepository productoRepository){
         this.productoRepository= productoRepository;
     }
 

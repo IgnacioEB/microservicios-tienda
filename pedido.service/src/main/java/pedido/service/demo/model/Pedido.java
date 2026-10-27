@@ -57,4 +57,7 @@ public class Pedido {
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
+
+    public void setEstado(String pendiente) {
+    }
 }
