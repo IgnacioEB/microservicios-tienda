@@ -37,7 +37,7 @@ public class ProductoController {
 
     @PatchMapping("/productos/{id}/stock")
     public ResponseEntity<Producto> descontarStock(@PathVariable Long id, @RequestBody DescontarStockRequest request){
-        return ResponseEntity.ok(productoService.descontarStock(id, request.getCantidad()));
+        return ResponseEntity.ok(productoService.descontarStock(id, request.cantidad()));
     }
 
     @PatchMapping("/productos/{id}/desactivar")
