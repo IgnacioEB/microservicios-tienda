@@ -6,8 +6,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USERNAME: ${RABBITMQ_USERNAME}
-      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     healthcheck:
       test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
       interval: 10s
@@ -46,6 +46,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/productos
       DB_USER: ${DB_USER}
@@ -65,6 +67,8 @@ services:
         condition: service_started
       producto-service:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/pedidos
       DB_USER: ${DB_USER}
